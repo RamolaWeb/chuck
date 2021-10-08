@@ -147,23 +147,6 @@ public final class ChuckInterceptor implements Interceptor {
             }
         }
 
-        transaction.setRequestBodyIsPlainText(!bodyHasUnsupportedEncoding(request.headers()));
-        if (hasRequestBody && transaction.requestBodyIsPlainText()) {
-            BufferedSource source = getNativeSource(new Buffer(), bodyGzipped(request.headers()));
-            Buffer buffer = source.buffer();
-            requestBody.writeTo(buffer);
-            Charset charset = UTF8;
-            MediaType contentType = requestBody.contentType();
-            if (contentType != null) {
-                charset = contentType.charset(UTF8);
-            }
-            if (isPlaintext(buffer)) {
-                transaction.setRequestBody(readFromBuffer(buffer, charset));
-            } else {
-                transaction.setResponseBodyIsPlainText(false);
-            }
-        }
-
         Uri transactionUri = create(transaction);
 
         long startNs = System.nanoTime();
